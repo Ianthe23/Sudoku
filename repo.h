@@ -60,6 +60,11 @@ public:
     bool isGameWon() noexcept {
         return this->sudoku == this->sudokuRezolvat;
     }
+
+    static void resetInstance() {
+        delete instance;
+        instance = nullptr;
+    }
 };
 
 #endif /* REPO_H_ */

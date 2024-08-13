@@ -19,6 +19,7 @@ void Repo::loadFromModes(int line) {
 			qDebug() << "Loaded sudoku and sudokuRezolvat successfully.";
 			break;
 		}
+		f >> sudokuRead;
 		i += 18;
 	}
 

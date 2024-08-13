@@ -24,6 +24,8 @@
 #include <QItemSelectionModel>
 #include <QAbstractItemView>
 #include <QHeaderView>
+#include <QGraphicsDropShadowEffect>
+
 
 class MainWindow : public QWidget {
 public:
@@ -136,8 +138,8 @@ protected:
 
 private slots:
     void adjustSizesFirst() {
-        int totalWidth = 542;
-        int totalHeight = 470;
+        int totalWidth = 546;
+        int totalHeight = 474;
 
         qDebug() << "Table size:" << totalWidth << "x" << totalHeight;
 

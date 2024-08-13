@@ -25,32 +25,37 @@ void MainWindow::initMainWindow() {
 int MainWindow::generateRandomNumber() {
     std::random_device rd;
     std::mt19937 gen(rd());
-    int upper_bound = 0;
+    int upper_bound = 2;
     std::uniform_int_distribution<> distribution(0, upper_bound);
     int randomMultipleOf18 = distribution(gen) * 18;
+    qDebug() << "Random number: " << randomMultipleOf18;
     return randomMultipleOf18;
 }
 
 void MainWindow::connectSignalsMain() {
     QObject::connect(btn_easy, &QPushButton::clicked, [this]() {
+        Repo::resetInstance();
         Repo* repo = Repo::getInstance("sudoku.txt", "easy.txt", this->generateRandomNumber());
         CentralWindow* central = new CentralWindow(*repo);
         this->close();
         central->show();
         });
     QObject::connect(btn_medium, &QPushButton::clicked, [this]() {
+        Repo::resetInstance();
         Repo* repo = Repo::getInstance("sudoku.txt", "medium.txt", this->generateRandomNumber());
         CentralWindow* central = new CentralWindow(*repo);
         this->close();
         central->show();
         });
     QObject::connect(btn_hard, &QPushButton::clicked, [this]() {
+        Repo::resetInstance();
         Repo* repo = Repo::getInstance("sudoku.txt", "hard.txt", this->generateRandomNumber());
         CentralWindow* central = new CentralWindow(*repo);
         this->close();
         central->show();
         });
     QObject::connect(btn_expert, &QPushButton::clicked, [this]() {
+        Repo::resetInstance();
         Repo* repo = Repo::getInstance("sudoku.txt", "expert.txt", this->generateRandomNumber());
         CentralWindow* central = new CentralWindow(*repo);
         this->close();
@@ -102,33 +107,60 @@ void CentralWindow::initCentralWindow() {
     QHBoxLayout* btn2Layout = new QHBoxLayout;
     QHBoxLayout* btn3Layout = new QHBoxLayout;
 
-    btn_1->setStyleSheet("background-color: white;"
-        "border-radius: 4px;"
-        "font-size: 20px;");
-    btn_2->setStyleSheet("background-color: white;"
-        "border-radius: 4px;"
-        "font-size: 20px;");
-    btn_3->setStyleSheet("background-color: white;"
-        "border-radius: 4px;"
-        "font-size: 20px;");
-    btn_4->setStyleSheet("background-color: white;"
-        "border-radius: 4px;"
-        "font-size: 20px;");
-    btn_5->setStyleSheet("background-color: white;"
-        "border-radius: 4px;"
-        "font-size: 20px;");
-    btn_6->setStyleSheet("background-color: white;"
-        "border-radius: 4px;"
-        "font-size: 20px;");
-    btn_7->setStyleSheet("background-color: white;"
-        "border-radius: 4px;"
-        "font-size: 20px;");
-    btn_8->setStyleSheet("background-color: white;"
-        "border-radius: 4px;"
-        "font-size: 20px;");
-    btn_9->setStyleSheet("background-color: white;"
-        "border-radius: 4px;"
-        "font-size: 20px;");
+    auto createShadowEffect = [](QPushButton* button) {
+        QGraphicsDropShadowEffect* shadowEffect = new QGraphicsDropShadowEffect;
+        shadowEffect->setColor(QColor(0, 0, 0, 160)); // Slightly transparent black
+        shadowEffect->setOffset(4, 4); // Slightly to the right and down
+        shadowEffect->setBlurRadius(15); // Blur radius
+        button->setGraphicsEffect(shadowEffect);
+        };
+
+    btn_1->setStyleSheet(
+        "QPushButton { background-color: white; border-radius: 4px; font-size: 20px; }"
+        "QPushButton:hover { background-color: grey; }"
+    );
+    btn_2->setStyleSheet(
+        "QPushButton { background-color: white; border-radius: 4px; font-size: 20px; }"
+        "QPushButton:hover { background-color: grey; }"
+    );
+    btn_3->setStyleSheet(
+        "QPushButton { background-color: white; border-radius: 4px; font-size: 20px; }"
+        "QPushButton:hover { background-color: grey; }"
+    );
+    btn_4->setStyleSheet(
+        "QPushButton { background-color: white; border-radius: 4px; font-size: 20px; }"
+        "QPushButton:hover { background-color: grey; }"
+    );
+    btn_5->setStyleSheet(
+        "QPushButton { background-color: white; border-radius: 4px; font-size: 20px; }"
+        "QPushButton:hover { background-color: grey; }"
+    );
+    btn_6->setStyleSheet(
+        "QPushButton { background-color: white; border-radius: 4px; font-size: 20px; }"
+        "QPushButton:hover { background-color: grey; }"
+    );
+    btn_7->setStyleSheet(
+        "QPushButton { background-color: white; border-radius: 4px; font-size: 20px; }"
+        "QPushButton:hover { background-color: grey; }"
+    );
+    btn_8->setStyleSheet(
+        "QPushButton { background-color: white; border-radius: 4px; font-size: 20px; }"
+        "QPushButton:hover { background-color: grey; }"
+    );
+    btn_9->setStyleSheet(
+        "QPushButton { background-color: white; border-radius: 4px; font-size: 20px; }"
+        "QPushButton:hover { background-color: grey; }"
+    );
+
+    createShadowEffect(btn_1);
+    createShadowEffect(btn_2);
+    createShadowEffect(btn_3);
+    createShadowEffect(btn_4);
+    createShadowEffect(btn_5);
+    createShadowEffect(btn_6);
+    createShadowEffect(btn_7);
+    createShadowEffect(btn_8);
+    createShadowEffect(btn_9);
 
     btn_1->setFixedSize(50, 50);
     btn_2->setFixedSize(50, 50);
@@ -172,6 +204,7 @@ void CentralWindow::initCentralWindow() {
     btnLayout->addLayout(btn1Layout);
     btnLayout->addLayout(btn2Layout);
     btnLayout->addLayout(btn3Layout);
+    btnLayout->addSpacing(20);
 }
 
 void CentralWindow::loadTable(Sudoku sudoku) {
@@ -251,7 +284,7 @@ void CentralWindow::updateSelectedCell(int value) {
     }
 
     // Check if the game is won
-    if (repo.isGameWon()) {
+    else if (repo.isGameWon()) {
         timer->stop();
         showMessageBox("Game Won", "Congratulations!", QMessageBox::Information);
         this->close();
@@ -274,7 +307,7 @@ void CentralWindow::drawBambooShapes(QPainter* painter) {
     painter->setPen(thickWhitePen);
 
     // Adjust the y-coordinate to move the line lower
-    int yCoordinate = 70;  // Adjust this value as needed
+    int yCoordinate = 60;  // Adjust this value as needed
     painter->drawLine(0, yCoordinate, this->width(), yCoordinate);
 
     QPen pen(QColor(0, 100, 0));  // Dark green color for bamboo
