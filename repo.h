@@ -5,31 +5,48 @@
 #include "exceptions.h"
 #include <fstream>
 #include <vector>
+#include <qDebug>
 
+// Singleton pattern implementation for Repo class
 class Repo {
 private:
-	Sudoku sudoku;
-	Sudoku sudokuRezolvat;
-	string path;
-	string pathMode;
-	int line;
-	void loadFromModes(int line);
-	void loadFile();
-	void saveFile();
+    Sudoku sudoku;
+    Sudoku sudokuRezolvat;
+    std::string path;
+    std::string pathMode;
+    int line;
+    static Repo* instance;
+
+    // Private constructor to prevent multiple instances
+    Repo(const std::string& p, const std::string& pm, int l)
+        : path(p), pathMode(pm), line(l) {
+        loadFromModes(l);
+    }
+
+    void loadFromModes(int line);
+    void loadFile();
+    void saveFile();
+
 public:
-	Repo(const string& p, const string& pm, int l) : path(p), pathMode(pm), line(l) {
-		loadFromModes(l);
-	}
+    Repo(Repo& other) = delete; // Prevent copying
 
-	Repo(Repo& other) = delete;
+    static Repo* getInstance(const std::string& p = "", const std::string& pm = "", int l = 0) {
+        if (instance == nullptr) {
+            instance = new Repo(p, pm, l);
+        }
+        return instance;
+    }
 
-	void adaugaRepo(int i, int j, int val);
-	void stergeRepo(int i, int j);
-	void modificaRepo(int i, int j, int val);
+    void stergeRepo(int i, int j);
+    void modificaRepo(int i, int j, int val);
 
-	Sudoku getSudoku() const noexcept {
-		return this->sudoku;
-	};
+    Sudoku& getSudoku() noexcept {
+        return this->sudoku;
+    };
+
+    Sudoku& getSudokuRezolvat() noexcept {
+        return this->sudokuRezolvat;
+    };
 };
 
 #endif /* REPO_H_ */

@@ -13,26 +13,43 @@ public:
         : QStyledItemDelegate(parent), tableView(tableView) {}
 
     void paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const override {
-        // Determine if the cell should have a special background
-        bool highlightRow = tableView && tableView->selectionModel()->currentIndex().row() == index.row();
-        bool highlightCol = tableView && tableView->selectionModel()->currentIndex().column() == index.column();
+        // Determine if the cell is highlighted (in the same row/column as the selected cell)
+        QModelIndex currentIndex = tableView->selectionModel()->currentIndex();
+        bool highlightRow = tableView && currentIndex.row() == index.row();
+        bool highlightCol = tableView && currentIndex.column() == index.column();
+        bool isSelected = tableView && currentIndex == index;
+
+        // Get the text of the selected cell
+        QString selectedText = currentIndex.data().toString();
+        QString cellText = index.data().toString();
 
         // Set the background color based on selection
-        if (highlightRow || highlightCol) {
-            painter->fillRect(option.rect, QColor(173, 255, 47)); // Light green background for the selected row/column
+        if (isSelected || highlightRow || highlightCol) {
+            painter->fillRect(option.rect, QColor(235, 245, 231)); // Light green background for the selected row/column or selected cell
         }
         else {
-            painter->fillRect(option.rect, QColor(255, 255, 255)); // White background for unselected cells
+            painter->fillRect(option.rect, QColor(238, 238, 238)); // Default background for unselected cells
         }
+
+        // Set font properties
+        QFont font = painter->font();
+        if (cellText == selectedText) {
+            font.setBold(true);
+        }
+        else {
+            font.setBold(false);
+        }
+        painter->setFont(font);
 
         // Draw the text
         painter->setPen(Qt::black);
-        painter->drawText(option.rect, Qt::AlignCenter, index.data().toString());
+        painter->drawText(option.rect, Qt::AlignCenter, cellText);
 
         // Draw borders
         QRect rect = option.rect;
         QPen thickPen(Qt::black, 3);
         QPen normalPen(Qt::black, 1);
+        QPen greenPen(QColor(106, 168, 79), 3);
 
         bool topThick = (index.row() == 3 || index.row() == 6);
         bool leftThick = (index.column() == 3 || index.column() == 6);
@@ -40,19 +57,19 @@ public:
         bool rightThick = (index.column() == 2 || index.column() == 5);
 
         // Draw top border
-        painter->setPen(topThick ? thickPen : normalPen);
+        painter->setPen(topThick ? thickPen : (isSelected ? greenPen : normalPen));
         painter->drawLine(rect.topLeft(), rect.topRight());
 
         // Draw left border
-        painter->setPen(leftThick ? thickPen : normalPen);
+        painter->setPen(leftThick ? thickPen : (isSelected ? greenPen : normalPen));
         painter->drawLine(rect.topLeft(), rect.bottomLeft());
 
         // Draw bottom border
-        painter->setPen(bottomThick ? thickPen : normalPen);
+        painter->setPen(bottomThick ? thickPen : (isSelected ? greenPen : normalPen));
         painter->drawLine(rect.bottomLeft(), rect.bottomRight());
 
         // Draw right border
-        painter->setPen(rightThick ? thickPen : normalPen);
+        painter->setPen(rightThick ? thickPen : (isSelected ? greenPen : normalPen));
         painter->drawLine(rect.topRight(), rect.bottomRight());
     }
 

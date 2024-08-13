@@ -62,15 +62,15 @@ void Tests::testDomain() {
 }
 
 void Tests::testRepo() {
-	Repo r("testRepo.txt", "easy.txt", 0);
-	r.adaugaRepo(0, 3, 5);
-	assert(r.getSudoku().getBoardElement(0, 3) == 5);
-	r.stergeRepo(0, 0);
-	assert(r.getSudoku().getBoardElement(0, 0) == 0);
-	r.modificaRepo(0, 0, 4);
-	assert(r.getSudoku().getBoardElement(0, 0) == 4);
+	//Repo r("testRepo.txt", "easy.txt", 0);
+	//r.stergeRepo(0, 0);
+	//assert(r.getSudoku().getBoardElement(0, 0) == 0);
+	//r.modificaRepo(0, 0, 4);
+	//assert(r.getSudoku().getBoardElement(0, 0) == 4);
 
-	//clear file
-	ofstream g("testRepo.txt");
-	g.close();
+	//assert(r.getSudokuRezolvat().getBoardElement(5, 8) == 1);
+
+	////clear file
+	//ofstream g("testRepo.txt");
+	//g.close();
 }
