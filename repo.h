@@ -12,13 +12,14 @@ class Repo {
 private:
     Sudoku sudoku;
     Sudoku sudokuRezolvat;
-    std::string path;
-    std::string pathMode;
+    string path;
+    string pathMode;
     int line;
+    int mistakes = 0;
     static Repo* instance;
 
     // Private constructor to prevent multiple instances
-    Repo(const std::string& p, const std::string& pm, int l)
+    Repo(const string& p, const string& pm, int l)
         : path(p), pathMode(pm), line(l) {
         loadFromModes(l);
     }
@@ -30,7 +31,7 @@ private:
 public:
     Repo(Repo& other) = delete; // Prevent copying
 
-    static Repo* getInstance(const std::string& p = "", const std::string& pm = "", int l = 0) {
+    static Repo* getInstance(const string& p = "", const string& pm = "", int l = 0) {
         if (instance == nullptr) {
             instance = new Repo(p, pm, l);
         }
@@ -47,6 +48,18 @@ public:
     Sudoku& getSudokuRezolvat() noexcept {
         return this->sudokuRezolvat;
     };
+
+    int getMistakes() noexcept {
+		return this->mistakes;
+	}
+
+    bool isGameOver() noexcept {
+		return this->mistakes == 3;
+	}
+
+    bool isGameWon() noexcept {
+        return this->sudoku == this->sudokuRezolvat;
+    }
 };
 
 #endif /* REPO_H_ */

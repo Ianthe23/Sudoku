@@ -3,11 +3,11 @@
 void MainWindow::initMainWindow() {
     QHBoxLayout* layout = new QHBoxLayout;
     this->setLayout(layout);
-    //set the minimum size of the window
+    // Set the minimum size of the window
     this->setMinimumSize(400, 400);
 
     QLabel* label = new QLabel("Sudoku");
-    //make the label bigger
+    // Make the label bigger
     QFont f = label->font();
     f.setPointSize(20);
     label->setFont(f);
@@ -35,25 +35,25 @@ void MainWindow::connectSignalsMain() {
     QObject::connect(btn_easy, &QPushButton::clicked, [this]() {
         Repo* repo = Repo::getInstance("sudoku.txt", "easy.txt", this->generateRandomNumber());
         CentralWindow* central = new CentralWindow(*repo);
-        this->hide();
+        this->close();
         central->show();
         });
     QObject::connect(btn_medium, &QPushButton::clicked, [this]() {
         Repo* repo = Repo::getInstance("sudoku.txt", "medium.txt", this->generateRandomNumber());
         CentralWindow* central = new CentralWindow(*repo);
-        this->hide();
+        this->close();
         central->show();
         });
     QObject::connect(btn_hard, &QPushButton::clicked, [this]() {
         Repo* repo = Repo::getInstance("sudoku.txt", "hard.txt", this->generateRandomNumber());
         CentralWindow* central = new CentralWindow(*repo);
-        this->hide();
+        this->close();
         central->show();
         });
     QObject::connect(btn_expert, &QPushButton::clicked, [this]() {
         Repo* repo = Repo::getInstance("sudoku.txt", "expert.txt", this->generateRandomNumber());
         CentralWindow* central = new CentralWindow(*repo);
-        this->hide();
+        this->close();
         central->show();
         });
 }
@@ -73,12 +73,13 @@ void CentralWindow::initCentralWindow() {
     // Set the gradient as the brush for the background
     palette.setBrush(QPalette::Window, QBrush(gradient));
 
-    QFont font = QFont("Helvetica", 16, 10, false);
+    QFont font = QFont("Helvetica", 12, 10, false);
     QFont boldFont = font;
     boldFont.setBold(true);
 
     this->setAutoFillBackground(true); //
     this->setPalette(palette);
+
     this->setFont(font);
 
     this->setStyleSheet("color: black;");
@@ -95,37 +96,39 @@ void CentralWindow::initCentralWindow() {
 
     QVBoxLayout* btnLayout = new QVBoxLayout;
     layout->addLayout(btnLayout);
+
+
     QHBoxLayout* btn1Layout = new QHBoxLayout;
     QHBoxLayout* btn2Layout = new QHBoxLayout;
     QHBoxLayout* btn3Layout = new QHBoxLayout;
 
     btn_1->setStyleSheet("background-color: white;"
         "border-radius: 4px;"
-        "font-size: 18px;");
+        "font-size: 20px;");
     btn_2->setStyleSheet("background-color: white;"
         "border-radius: 4px;"
-        "font-size: 18px;");
+        "font-size: 20px;");
     btn_3->setStyleSheet("background-color: white;"
         "border-radius: 4px;"
-        "font-size: 18px;");
+        "font-size: 20px;");
     btn_4->setStyleSheet("background-color: white;"
         "border-radius: 4px;"
-        "font-size: 18px;");
+        "font-size: 20px;");
     btn_5->setStyleSheet("background-color: white;"
         "border-radius: 4px;"
-        "font-size: 18px;");
+        "font-size: 20px;");
     btn_6->setStyleSheet("background-color: white;"
         "border-radius: 4px;"
-        "font-size: 18px;");
+        "font-size: 20px;");
     btn_7->setStyleSheet("background-color: white;"
         "border-radius: 4px;"
-        "font-size: 18px;");
+        "font-size: 20px;");
     btn_8->setStyleSheet("background-color: white;"
         "border-radius: 4px;"
-        "font-size: 18px;");
+        "font-size: 20px;");
     btn_9->setStyleSheet("background-color: white;"
         "border-radius: 4px;"
-        "font-size: 18px;");
+        "font-size: 20px;");
 
     btn_1->setFixedSize(50, 50);
     btn_2->setFixedSize(50, 50);
@@ -155,8 +158,17 @@ void CentralWindow::initCentralWindow() {
     btn3Layout->addWidget(btn_9);
     btn3Layout->addSpacing(20);
 
+    // make the text of the timer label bold
+    timeLabel->setFont(boldFont);
+    // make the bottom border of the label white
+    timeLabel->setStyleSheet("border-bottom: 1px solid white;");
+    // Add the timer label to the button layout
+    btnLayout->addWidget(timeLabel, 0, Qt::AlignHCenter);
+    // make the text of the mistakes label bold
+    mistakesLabel->setFont(boldFont);
+    // Add the mistakes label to the button layout
+    btnLayout->addWidget(mistakesLabel, 0, Qt::AlignHCenter);
     btnLayout->addSpacing(200);
-
     btnLayout->addLayout(btn1Layout);
     btnLayout->addLayout(btn2Layout);
     btnLayout->addLayout(btn3Layout);
@@ -175,9 +187,6 @@ void CentralWindow::loadTable(Sudoku sudoku) {
         "   gridline-color: black;"
         "   font-size: 20px;"
         "}"
-        "QTableView::item:selected {"
-        "    selection-background-color: #eeeeee;"
-        "}"
     );
 
     table->setItemDelegate(delegate);
@@ -193,8 +202,17 @@ void CentralWindow::loadTable(Sudoku sudoku) {
     adjustSizes();
 }
 
+void CentralWindow::showMessageBox(const QString& title, const QString& message, QMessageBox::Icon icon) {
+    QMessageBox messageBox(this);
+    messageBox.setIcon(icon);
+    messageBox.setWindowTitle(title);
+    messageBox.setText(message);
+    messageBox.setStyleSheet("QMessageBox { background-color: white; color: black; }"
+        "QPushButton { background-color: rgb(206, 206, 206); color: black; border-radius: 3px; padding: 10px 25px 10px 25px; }");
+    messageBox.exec();
+}
+
 void CentralWindow::updateSelectedCell(int value) {
-    QMessageBox msg;
     QModelIndex currentIndex = table->selectionModel()->currentIndex();
 
     if (currentIndex.isValid()) {
@@ -206,16 +224,108 @@ void CentralWindow::updateSelectedCell(int value) {
         // Check if the cell is editable
         Qt::ItemFlags flags = model->flags(currentIndex);
         if (!(flags & Qt::ItemIsEditable)) {
-            QMessageBox::warning(this, "Error", "Selected cell cannot be edited.");
+            showMessageBox("Error", "Selected cell cannot be edited.", QMessageBox::Warning);
             return;
         }
 
         try {
             repo.modificaRepo(row, column, value);
             model->setData(currentIndex, value, Qt::EditRole);
+            table->viewport()->update();
         }
         catch (RepoException& mesaj) {
-            msg.warning(this, "Warning", QString::fromStdString(mesaj.get_mesaj()));
+            showMessageBox("Warning", QString::fromStdString(mesaj.get_mesaj()), QMessageBox::Warning);
+            // Update the mistakes label
+            mistakesLabel->setText("Mistakes: " + QString::number(repo.getMistakes()) + "/3");
         }
     }
+
+    // Check if the game is over
+    if (repo.isGameOver()) {
+        timer->stop();
+        showMessageBox("Game Over", "Try again!", QMessageBox::Information);
+        this->close();
+        // Return to the main window
+        MainWindow* main = new MainWindow;
+        main->show();
+    }
+
+    // Check if the game is won
+    if (repo.isGameWon()) {
+        timer->stop();
+        showMessageBox("Game Won", "Congratulations!", QMessageBox::Information);
+        this->close();
+        // Return to the main window
+        MainWindow* main = new MainWindow;
+        main->show();
+    }
+}
+
+void CentralWindow::paintEvent(QPaintEvent* event) {
+    QWidget::paintEvent(event);
+
+    QPainter painter(this);
+    drawBambooShapes(&painter);
+}
+
+void CentralWindow::drawBambooShapes(QPainter* painter) {
+    // draw a thick white line to separate the 2 labels, time and mistake
+    QPen thickWhitePen(QColor(255, 255, 255), 3);  // Thick white line
+    painter->setPen(thickWhitePen);
+
+    // Adjust the y-coordinate to move the line lower
+    int yCoordinate = 70;  // Adjust this value as needed
+    painter->drawLine(0, yCoordinate, this->width(), yCoordinate);
+
+    QPen pen(QColor(0, 100, 0));  // Dark green color for bamboo
+    painter->setPen(pen);
+    painter->setBrush(QBrush(QColor(0, 155, 0)));  // Light green color for bamboo
+
+    QPoint bottomRight = rect().bottomRight();
+
+    // Draw the first bamboo stalk
+    int x1 = bottomRight.x() - 100;  // Position for the first bamboo
+    int y1 = bottomRight.y() - 150;  // Height for the first bamboo
+    for (int i = 0; i < 6; ++i) {  // Number of segments for the first bamboo
+        painter->drawRect(x1, y1 - i * 30, 20, 30);
+    }
+
+    // Draw the second bamboo stalk (shorter)
+    int x2 = x1 - 40;  // Position for the second bamboo
+    int y2 = bottomRight.y() - 120;  // Height for the second bamboo
+    for (int i = 0; i < 4; ++i) {  // Number of segments for the second bamboo
+        painter->drawRect(x2, y2 - i * 30, 20, 30);
+    }
+
+    // Draw the third bamboo stalk (taller)
+    int x3 = x1 + 40;  // Position for the third bamboo
+    int y3 = bottomRight.y() - 200;  // Height for the third bamboo
+    for (int i = 0; i < 7; ++i) {  // Number of segments for the third bamboo
+        painter->drawRect(x3, y3 - i * 30, 20, 30);
+    }
+
+    // Draw leaves on the first bamboo
+    QBrush leafBrush(QColor(34, 139, 34));
+    painter->setBrush(leafBrush);
+    painter->drawEllipse(x1 - 15, y1 - 90, 30, 10);  // Left leaf
+    painter->drawEllipse(x1 + 5, y1 - 90, 30, 10);   // Right leaf
+    painter->drawEllipse(x1 - 5, y1 - 120, 30, 10);  // Top leaf
+
+    // Draw leaves on the second bamboo
+    painter->drawEllipse(x2 - 15, y2 - 60, 30, 10);  // Left leaf
+    painter->drawEllipse(x2 + 5, y2 - 60, 30, 10);   // Right leaf
+    painter->drawEllipse(x2 - 5, y2 - 90, 30, 10);   // Top leaf
+
+    // Draw leaves on the third bamboo
+    painter->drawEllipse(x3 - 15, y3 - 150, 30, 10);  // Left leaf
+    painter->drawEllipse(x3 + 5, y3 - 150, 30, 10);   // Right leaf
+    painter->drawEllipse(x3 - 5, y3 - 180, 30, 10);   // Top leaf
+
+    // Additional leaves on the third (tallest) bamboo, a bit lower
+    painter->drawEllipse(x3 - 15, y3 - 90, 30, 10);  // Left leaf
+    painter->drawEllipse(x3 + 5, y3 - 90, 30, 10);   // Right leaf
+    painter->drawEllipse(x3 - 5, y3 - 120, 30, 10);   // Top leaf
+
+    painter->drawEllipse(x3 - 15, y3, 30, 10);  // Left leaf
+    painter->drawEllipse(x3 + 5, y3, 30, 10);   // Right leaf
 }

@@ -18,6 +18,12 @@
 #include <iostream>
 #include <random>
 #include <QTimer>
+#include <iomanip>
+#include <sstream>
+#include <QResizeEvent>
+#include <QItemSelectionModel>
+#include <QAbstractItemView>
+#include <QHeaderView>
 
 class MainWindow : public QWidget {
 public:
@@ -58,7 +64,7 @@ public:
         // Ensure sizes are adjusted initially
         QTimer::singleShot(0, this, &CentralWindow::adjustSizesFirst);
 
-        // Connect button signals to the slot
+        // Connect button signals to the slots
         connect(btn_1, &QPushButton::clicked, this, [this]() { updateSelectedCell(1); });
         connect(btn_2, &QPushButton::clicked, this, [this]() { updateSelectedCell(2); });
         connect(btn_3, &QPushButton::clicked, this, [this]() { updateSelectedCell(3); });
@@ -68,12 +74,27 @@ public:
         connect(btn_7, &QPushButton::clicked, this, [this]() { updateSelectedCell(7); });
         connect(btn_8, &QPushButton::clicked, this, [this]() { updateSelectedCell(8); });
         connect(btn_9, &QPushButton::clicked, this, [this]() { updateSelectedCell(9); });
+
+        // Initialize and start the timer
+        timeElapsed = 0;
+        connect(timer, &QTimer::timeout, this, &CentralWindow::updateTimeLabel);
+        timer->start(1000);
     }
+
 private:
     Repo& repo;
     MyTableModel* model;
     QTableView* table = new QTableView;
     MyTableDelegate* delegate;
+    // Variable for time elapsed
+    int timeElapsed;
+    // Timer for time elapsed
+    QTimer* timer = new QTimer(this);
+    // Label for time elapsed
+    QLabel* timeLabel = new QLabel("Time elapsed: 00:00");
+
+    // Label for mistakes out of three
+    QLabel* mistakesLabel = new QLabel("Mistakes: 0/3");
 
     QPushButton* btn_1 = new QPushButton("1");
     QPushButton* btn_2 = new QPushButton("2");
@@ -87,8 +108,19 @@ private:
 
     void initCentralWindow();
     void loadTable(Sudoku sudoku);
-    
     void updateSelectedCell(int value);
+    void showMessageBox(const QString& title, const QString& message, QMessageBox::Icon icon = QMessageBox::NoIcon);
+    void drawBambooShapes(QPainter* painter);
+
+
+    QString formatTime(int totalSeconds) {
+        int minutes = totalSeconds / 60;
+        int seconds = totalSeconds % 60;
+        QString formattedTime = QString("%1:%2")
+            .arg(minutes, 2, 10, QChar('0'))
+            .arg(seconds, 2, 10, QChar('0'));
+        return formattedTime;
+    }
 signals:
     void resized();
 
@@ -99,6 +131,8 @@ protected:
 
         qDebug() << "Sudoku window size:" << this->width() << "x" << this->height();
     }
+
+    void paintEvent(QPaintEvent* event) override;
 
 private slots:
     void adjustSizesFirst() {
@@ -133,6 +167,11 @@ private slots:
             table->setRowHeight(i, totalHeight / 9);
             qDebug() << "Row " << i << " height: " << totalHeight / 9;
         }
+    }
+
+    void updateTimeLabel() {
+        timeElapsed++;
+        timeLabel->setText(QString("Time elapsed: %1").arg(formatTime(timeElapsed)));
     }
 };
 

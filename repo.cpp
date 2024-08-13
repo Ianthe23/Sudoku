@@ -83,7 +83,8 @@ void Repo::modificaRepo(int i, int j, int val) {
 	}
 
 	if (this->getSudokuRezolvat().getBoardElement(i, j) != val) {
-		throw RepoException("Valoare gresita!");
+		this->mistakes++;
+		throw RepoException("Wrong number!");
 	}
 
 	this->getSudoku().setBoardElement(i, j, val);
