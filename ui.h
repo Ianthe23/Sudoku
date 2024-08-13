@@ -25,7 +25,8 @@
 #include <QAbstractItemView>
 #include <QHeaderView>
 #include <QGraphicsDropShadowEffect>
-
+#include <QMediaPlayer>
+#include <QAudioOutput>
 
 class MainWindow : public QWidget {
 public:
@@ -81,6 +82,15 @@ public:
         timeElapsed = 0;
         connect(timer, &QTimer::timeout, this, &CentralWindow::updateTimeLabel);
         timer->start(1000);
+
+        // Initialize QMediaPlayer for background music
+        player = new QMediaPlayer(this);
+        QAudioOutput* audioOutput = new QAudioOutput(this);
+        player->setAudioOutput(audioOutput);
+        player->setSource(QUrl::fromLocalFile("music/chinese-song.mp3"));
+        audioOutput->setVolume(0.5);
+        player->play();
+
     }
 
 private:
@@ -88,6 +98,9 @@ private:
     MyTableModel* model;
     QTableView* table = new QTableView;
     MyTableDelegate* delegate;
+
+    QMediaPlayer* player;
+
     // Variable for time elapsed
     int timeElapsed;
     // Timer for time elapsed
