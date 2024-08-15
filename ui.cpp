@@ -37,28 +37,28 @@ void MainWindow::connectSignalsMain() {
         Repo::resetInstance();
         Repo* repo = Repo::getInstance("sudoku.txt", "easy.txt", this->generateRandomNumber());
         CentralWindow* central = new CentralWindow(*repo);
-        this->close();
+        this->close();  
         central->show();
         });
     QObject::connect(btn_medium, &QPushButton::clicked, [this]() {
         Repo::resetInstance();
         Repo* repo = Repo::getInstance("sudoku.txt", "medium.txt", this->generateRandomNumber());
         CentralWindow* central = new CentralWindow(*repo);
-        this->close();
+        this->close();   
         central->show();
         });
     QObject::connect(btn_hard, &QPushButton::clicked, [this]() {
         Repo::resetInstance();
         Repo* repo = Repo::getInstance("sudoku.txt", "hard.txt", this->generateRandomNumber());
         CentralWindow* central = new CentralWindow(*repo);
-        this->close();
+        this->close(); 
         central->show();
         });
     QObject::connect(btn_expert, &QPushButton::clicked, [this]() {
         Repo::resetInstance();
         Repo* repo = Repo::getInstance("sudoku.txt", "expert.txt", this->generateRandomNumber());
         CentralWindow* central = new CentralWindow(*repo);
-        this->close();
+        this->close();  
         central->show();
         });
 }

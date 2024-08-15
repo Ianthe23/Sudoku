@@ -3,6 +3,7 @@
 
 #include "repo.h"
 #include "MyTableModel.h"
+#include "MusicManager.h"
 
 #include <QMainWindow>
 #include <QTableView>
@@ -83,14 +84,6 @@ public:
         connect(timer, &QTimer::timeout, this, &CentralWindow::updateTimeLabel);
         timer->start(1000);
 
-        // Initialize QMediaPlayer for background music
-        player = new QMediaPlayer(this);
-        QAudioOutput* audioOutput = new QAudioOutput(this);
-        player->setAudioOutput(audioOutput);
-        player->setSource(QUrl::fromLocalFile("music/chinese-song.mp3"));
-        audioOutput->setVolume(0.5);
-        player->play();
-
     }
 
 private:
@@ -99,7 +92,7 @@ private:
     QTableView* table = new QTableView;
     MyTableDelegate* delegate;
 
-    QMediaPlayer* player;
+    
 
     // Variable for time elapsed
     int timeElapsed;
